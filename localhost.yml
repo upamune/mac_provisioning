@@ -1,0 +1,163 @@
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  sudo: no
+  vars:
+    homebrew_taps:
+      - homebrew/binary
+      - homebrew/dupes
+      - caskroom/cask
+      - railwaycat/emacsmacport
+      - sanemat/font
+    homebrew_packages:
+      - { name: ansible }
+      - { name: autoconf }
+      - { name: autojump }
+      - { name: automake }
+      - { name: brew-cask }
+      - { name: clang-format }
+      - { name: cmake }
+      - { name: coreutils }
+      - { name: ctags }
+      - { name: curl }
+      - { name: direnv }
+      - { name: ffmpeg }
+      - { name: figlet }
+      - { name: flow }
+      - { name: gcc }
+      - { name: gdbm }
+      - { name: gettext }
+      - { name: gibo }
+      - { name: git }
+      - { name: gmp }
+      - { name: go }
+      - { name: heroku-toolbelt }
+      - { name: imagemagick }
+      - { name: isl }
+      - { name: jpeg }
+      - { name: jq }
+      - { name: lame }
+      - { name: lha }
+      - { name: libevent }
+      - { name: libiconv }
+      - { name: libmpc }
+      - { name: libtool }
+      - { name: libvo-aacenc }
+      - { name: libyaml }
+      - { name: lua }
+      - { name: lv }
+      - { name: mercurial }
+      - { name: mpfr }
+      - { name: mysql }
+      - { name: neovim }
+      - { name: nkf }
+      - { name: nkf }
+      - { name: node }
+      - { name: openssl }
+      - { name: openssl, state: linked, install_options: force }
+      - { name: packer }
+      - { name: pcre }
+      - { name: peco }
+      - { name: phantomjs }
+      - { name: pkg-config }
+      - { name: python }
+      - { name: python3 }
+      - { name: rbenv }
+      - { name: readline }
+      - { name: redis }
+      - { name: rmtrash }
+      - { name: rsense }
+      - { name: rsync }
+      - { name: ruby }
+      - { name: ruby-build }
+      - { name: scala }
+      - { name: socat }
+      - { name: source-highlight }
+      - { name: sqlite }
+      - { name: the_silver_searcher }
+      - { name: tig }
+      - { name: tmux }
+      - { name: tree }
+      - { name: vim }
+      - { name: w3m }
+      - { name: wget }
+      - { name: x264 }
+      - { name: xvid }
+      - { name: xz }
+      - { name: zsh }
+    homebrew_cask_packages:
+      - { name: 1password }
+      - { name: dropbox }
+      - { name: firefox }
+      - { name: google-chrome }
+      - { name: intellij-idea }
+      - { name: iterm2 }
+      - { name: karabiner }
+      - { name: phpstorm }
+      - { name: skype }
+      - { name: slack }
+      - { name: sourcetree }
+      - { name: vagrant }
+      - { name: virtualbox }
+      - { name: webstorm }
+
+  tasks:
+    - name: homebrew の tap リポジトリを追加
+      homebrew_tap: tap={{ item }} state=present
+      with_items: homebrew_taps
+
+    - name: homebrew をアップデート
+      homebrew: update_homebrew=yes
+
+    # brew
+    - name: brew パッケージをインストール
+      homebrew: >
+        name={{ item.name }}
+        state={{ item.state | default('latest') }}
+        install_options={{
+          item.install_options | default() | join(',')
+          if item.install_options is not string
+          else item.install_options
+        }}
+      with_items: homebrew_packages
+      register: brew_result
+    - name: brew パッケージの情報保存先ディレクトリを作成
+      file: path=brew_info state=directory
+    - name: brew パッケージの情報を保存
+      shell: brew info {{ item }} > brew_info/{{ item }}
+      with_items: brew_result.results | selectattr('changed') | map(attribute='item') | map(attribute='name') | list
+
+    # cask
+    - name: homebrew-cask のインストール
+      homebrew: name=brew-cask state=latest
+    - name: cask パッケージをインストール
+      homebrew_cask: name={{ item.name }} state={{ item.state|default('installed') }}
+      with_items: homebrew_cask_packages
+      register: cask_result
+    - name: cask パッケージの情報保存先ディレクトリを作成
+      file: path=cask_info state=directory
+    - name: cask パッケージの情報を保存
+      shell: brew cask info {{ item }} > cask_info/{{ item }}
+      with_items: cask_result.results | selectattr('changed') | map(attribute='item') | map(attribute='name') | list
+
+
+    # Ricty
+    - name: xquartz のインストール (for Ricty)
+      homebrew_cask: name=xquartz
+    - name: fontforge のインストール (for Ricty)
+      homebrew: name=fontforge
+    - name: Ricty のインストール
+      homebrew: name=ricty
+    - name: 生成されたフォントファイルをコピー
+      shell: cp -f $(brew --cellar ricty)/*/share/fonts/Ricty*.ttf ~/Library/Fonts/
+      args:
+        creates: ~/Library/Fonts/Ricty-Bold.ttf
+      notify: run fc-cache
+
+  handlers:
+    - name: run fc-cache
+      shell: fc-cache -vf
+
+      - { name: virtualbox }
+
+
