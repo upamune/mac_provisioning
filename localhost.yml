@@ -50,7 +50,6 @@
       - { name: mpfr }
       - { name: mysql }
       - { name: nkf }
-      - { name: nkf }
       - { name: node }
       - { name: openssl }
       - { name: openssl, state: linked, install_options: force }
