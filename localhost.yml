@@ -81,6 +81,7 @@
       - { name: zsh }
     homebrew_cask_packages:
       - { name: 1password }
+      - { name: alfred }
       - { name: dropbox }
       - { name: firefox }
       - { name: google-chrome }
