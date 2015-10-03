@@ -34,3 +34,7 @@ HOMEBREW_CASK_OPTS="--appdir=/Applications" ansible-playbook -i hosts -vv ../loc
 echo "Remove TMP DIR"
 cd .. && rm -fr "$PROVISION_DIR"
 
+echo "Change login shell..."
+echo `which zsh` | sudo tee -a /etc/shells
+chpass -s `which zsh`
+
