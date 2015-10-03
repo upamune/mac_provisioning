@@ -6,6 +6,7 @@
     homebrew_taps:
       - homebrew/binary
       - homebrew/dupes
+      - tcr/tcr
       - caskroom/cask
       - railwaycat/emacsmacport
     homebrew_packages:
