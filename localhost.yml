@@ -7,6 +7,7 @@
       - homebrew/binary
       - homebrew/dupes
       - caskroom/cask
+      - caskroom/fonts
       - railwaycat/emacsmacport
     homebrew_packages:
       - { name: ansible }
@@ -84,6 +85,7 @@
       - { name: alfred }
       - { name: dropbox }
       - { name: firefox }
+      - { name: font-source-code-pro }
       - { name: google-chrome }
       - { name: intellij-idea }
       - { name: iterm2 }
