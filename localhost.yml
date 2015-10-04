@@ -87,6 +87,7 @@
       - { name: firefox }
       - { name: font-source-code-pro }
       - { name: google-chrome }
+      - { name: gyazo }
       - { name: intellij-idea }
       - { name: iterm2 }
       - { name: karabiner }
@@ -98,6 +99,7 @@
       - { name: virtualbox }
       - { name: webstorm }
       - { name: xquartz }
+      - { name: night-owl }
 
   tasks:
     - name: homebrew の tap リポジトリを追加
